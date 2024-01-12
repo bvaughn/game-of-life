@@ -82,21 +82,41 @@ function getLiveNeighborCount(state, index) {
   return liveNeighborCount;
 }
 
-function print(header, state) {
+function print(header, state, prevState = {}) {
   const {liveCells, numColumns, numRows} = state;
+  const {liveCells: prevLiveCells = []} = prevState;
 
-  let string = "";
+  let string = "┌";
+  for (let index = 0; index < numColumns; index++) {
+    string += '┈';
+  }
+  string += '┐';
 
   const length = numColumns * numRows;
   for (let index = 0; index < length; index++) {
-    if (index > 0 && index % numColumns === 0) {
-      string += "\n";
+    if (index % numColumns === 0) {
+      string += "\n┊";
     }
 
+    const wasAlive = prevLiveCells.includes(index);
     const isAlive = liveCells.includes(index);
 
-    string += isAlive ? "█" : "░";
+    string += isAlive
+      ? "◍"
+      : wasAlive
+        ? "◌"
+        : " ";
+
+    if (index % numColumns === numColumns - 1) {
+      string += "┊";
+    }
   }
+
+  string += "\n└"
+  for (let index = 0; index < numColumns; index++) {
+    string += '┈';
+  }
+  string += '┘';
 
   console.log(`${header}\n${string}\n`);
 }
@@ -135,7 +155,7 @@ let index = 0;
 async function loop() {
   index++;
 
-  prevState = {...state};
+  const prevState = {...state};
 
   state = compute(state);
 
@@ -144,7 +164,7 @@ async function loop() {
     return;
   }
 
-  print(`Iteration ${index + 1}`, state);
+  print(`Iteration ${index + 1}`, state, prevState);
 }
 
 const interval = setInterval(loop, 250);
