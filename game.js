@@ -104,6 +104,7 @@ function print(header, state, prevState = {}) {
         : ' ';
   }
 
+  console.clear();
   console.log(`${header}\n${string}\n`);
 }
 
@@ -149,9 +150,7 @@ async function loop() {
     return;
   }
 
-  console.clear();
-
   print(`Iteration \x1b[33m\x1b[1m${index + 1}\x1b[0m`, state, prevState);
 }
 
-const interval = setInterval(loop, 250);
+const interval = setInterval(loop, 100);
