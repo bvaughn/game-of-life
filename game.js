@@ -86,37 +86,23 @@ function print(header, state, prevState = {}) {
   const {liveCells, numColumns, numRows} = state;
   const {liveCells: prevLiveCells = []} = prevState;
 
-  let string = "┌";
-  for (let index = 0; index < numColumns; index++) {
-    string += '┈';
-  }
-  string += '┐';
+  let string = "";
 
   const length = numColumns * numRows;
   for (let index = 0; index < length; index++) {
-    if (index % numColumns === 0) {
-      string += "\n┊";
+    if (index > 0 && index % numColumns === 0) {
+      string += "\n";
     }
 
     const wasAlive = prevLiveCells.includes(index);
     const isAlive = liveCells.includes(index);
 
     string += isAlive
-      ? "◍"
+      ? '\x1b[32m◍\x1b[0m'
       : wasAlive
-        ? "◌"
-        : " ";
-
-    if (index % numColumns === numColumns - 1) {
-      string += "┊";
-    }
+        ? '\x1b[90m◌\x1b[0m'
+        : ' ';
   }
-
-  string += "\n└"
-  for (let index = 0; index < numColumns; index++) {
-    string += '┈';
-  }
-  string += '┘';
 
   console.log(`${header}\n${string}\n`);
 }
@@ -164,7 +150,7 @@ async function loop() {
     return;
   }
 
-  print(`Iteration ${index + 1}`, state, prevState);
+  print(`Iteration \x1b[33m\x1b[1m${index + 1}\x1b[0m`, state, prevState);
 }
 
 const interval = setInterval(loop, 250);
