@@ -132,7 +132,6 @@ let state = {
   numColumns: 9,
   numRows: 12,
 };
-console.log(state)
 
 print(`Initial state`, state);
 
@@ -149,6 +148,8 @@ async function loop() {
     clearInterval(interval);
     return;
   }
+
+  console.clear();
 
   print(`Iteration \x1b[33m\x1b[1m${index + 1}\x1b[0m`, state, prevState);
 }
