@@ -123,13 +123,15 @@ const initialState = [
   0,0,0,0,0,1,0,0,0,
 ];
 
+const initialLiveCells = initialState.reduce((liveCells, cell, index) => {
+  if (cell === 1) {
+    liveCells.push(index);
+  }
+  return liveCells;
+}, []);
+
 let state = {
-  liveCells: initialState.reduce((liveCells, cell, index) => {
-    if (cell === 1) {
-      liveCells.push(index);
-    }
-    return liveCells;
-  }, []),
+  liveCells: initialLiveCells,
   numColumns: 9,
   numRows: 12,
 };
@@ -145,12 +147,16 @@ async function loop() {
 
   state = compute(state);
 
+  print(`Iteration \x1b[33m\x1b[1m${index + 1}\x1b[0m`, state, prevState);
+
   if (JSON.stringify(prevState) === JSON.stringify(state)) {
-    clearInterval(interval);
-    return;
+    index = 0;
+    state = {
+      ...state,
+      liveCells: initialLiveCells,
+    };
   }
 
-  print(`Iteration \x1b[33m\x1b[1m${index + 1}\x1b[0m`, state, prevState);
 }
 
 const interval = setInterval(loop, 100);
