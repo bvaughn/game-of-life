@@ -18,17 +18,24 @@ function initialize(numColumns, numRows, cellDensity, framerate) {
     clearTimeout(timeout);
   }
 
-  const CELL_SIZE = Math.min(MAX_CELL_SIZE, Math.floor((window.innerWidth - PADDING * 4) / numColumns));
+  const canvasContainerElement = document.getElementById("canvasContainer");
+  const loopIndexElement = document.getElementById("loopIndex");
+  const maxLoopIndexElement = document.getElementById("maxLoopIndex");
+  const numDyingCellsElement = document.getElementById("numDyingCells");
+  const numLiveCellsElement = document.getElementById("numLiveCells");
+
+
+  const CELL_SIZE = Math.min(
+    MAX_CELL_SIZE,
+    Math.floor((window.innerWidth - PADDING * 4) / numColumns),
+    Math.floor((canvasContainerElement.clientHeight - PADDING * 4) / numRows)
+  );
   const CELL_RADIUS = CELL_SIZE / 2;
 
   const height = numRows * CELL_SIZE + PADDING * 2;
   const width = numColumns * CELL_SIZE + PADDING * 2;
 
   let context;
-  let loopIndexElement;
-  let maxLoopIndexElement;
-  let numDyingCellsElement;
-  let numLiveCellsElement;
 
   {
     // Initialize canvas
@@ -45,12 +52,6 @@ function initialize(numColumns, numRows, cellDensity, framerate) {
 
   {
     // Initialize DOM
-
-    loopIndexElement = document.getElementById("loopIndex");
-    maxLoopIndexElement = document.getElementById("maxLoopIndex");
-    numDyingCellsElement = document.getElementById("numDyingCells");
-    numLiveCellsElement = document.getElementById("numLiveCells");
-
     const dyingCellElement = document.getElementById("dyingCell");
     dyingCellElement.style.height = `${CELL_SIZE}px`;
     dyingCellElement.style.width = `${CELL_SIZE}px`;

@@ -6,7 +6,7 @@
 </head>
 <body>
   <div class="container">
-    <div class="topRow">
+    <div class="row">
       <label  title="Number of columns">
         <svg class="icon" viewBox="0 0 24 24">
           <rect fill="none" height="24" width="24"/>
@@ -36,7 +36,7 @@
         <input id="framerateInput" inputmode="decimal" min="1" max="30" type="number" value="15" />
       </label>
     </div>
-    <div class="topRow">
+    <div class="row">
       <button id="restartButton" title="Restart">
         <svg class="icon" viewBox="0 0 24 24">
           <rect fill="none" height="24" width="24"/>
@@ -45,8 +45,7 @@
         restart
       </button>
     </div>
-    <canvas id="canvas"></canvas>
-    <div class="bottomRow">
+    <div class="row">
       <div class="statusColumnLeft">
         <span id="loopIndex">1</span><span id="maxLoopIndex">/10</span>
       </div>
@@ -58,6 +57,9 @@
         <span id="numDyingCells"></span>
         <span id="dyingCell">&nbsp;</span>
       </div>
+    </div>
+    <div id="canvasContainer">
+      <canvas id="canvas"></canvas>
     </div>
   </div>
   <script src="./game-browser.js"></script>
@@ -73,7 +75,6 @@
       const numColumns = Math.max(1, Math.min(50, parseInt(numColumnsInput.value)));
       const numRows = Math.max(1, Math.min(50, parseInt(numRowsInput.value)));
       const framerate = Math.max(1, Math.min(30, parseInt(framerateInput.value)));
-      console.log('framerate', framerate)
 
       densityInput.value = density;
       framerateInput.value = framerate;
