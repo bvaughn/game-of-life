@@ -1,0 +1,51 @@
+html, body {
+  width: 100vw;
+  height: 100vh;
+  background-color: #111;
+  color: #fff;
+  font-family: sans-serif;
+  font-size: 12px;
+}
+body, .container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+}
+.topRow {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+.bottomRow {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.statusColumnLeft {
+  width: 50%;
+}
+.statusColumnMiddle,
+.statusColumnRight {
+  width: 25%;
+  text-align: right;
+}
+#maxLoopIndex {
+  color: gray;
+}
+
+#dyingCell,
+#liveCell {
+  border-radius: 100%;
+  display: inline-block;
+}
+#dyingCell {
+  border: 1px dashed gray;
+}
+#liveCell {
+  background-color: green;
+}

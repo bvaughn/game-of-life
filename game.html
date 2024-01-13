@@ -1,56 +1,22 @@
 <html>
 <head>
-<style>
-  html, body {
-    width: 100vw;
-    height: 100vh;
-    background-color: #111;
-    color: #fff;
-    font-family: sans-serif;
-    font-size: 12px;
-  }
-  body, .container {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    align-items: center;
-    justify-content: center;
-  }
-  .statusRow {
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-  }
-  .statusColumnLeft {
-    width: 50%;
-  }
-  .statusColumnMiddle,
-  .statusColumnRight {
-    width: 25%;
-    text-align: right;
-  }
-  #maxLoopIndex {
-    color: gray;
-  }
-
-  #dyingCell,
-  #liveCell {
-    border-radius: 100%;
-    display: inline-block;
-  }
-  #dyingCell {
-    border: 1px dashed gray;
-  }
-  #liveCell {
-    background-color: green;
-  }
-</style>
+  <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
   <div class="container">
+    <div class="topRow">
+      <label>
+        columns <input id="numColumnsInput" min="1" max="100" placeholder="Number of columns" type="number" value="24" />
+      </label>
+      <label>
+        rows <input id="numRowsInput" min="1" max="100" placeholder="Number of rows" type="number" value="12" />
+      </label>
+      <label>
+        % density <input id="densityInput" min="1" max="100" placeholder="Cell density" type="number" value="25" />
+      </label>
+    </div>
     <canvas id="canvas"></canvas>
-    <div class="statusRow">
+    <div class="bottomRow">
       <div class="statusColumnLeft">
         <span id="loopIndex">1</span><span id="maxLoopIndex">/10</span>
       </div>
@@ -58,301 +24,25 @@
       <div class="statusColumnRight"><span id="dyingCell">&nbsp;</span> <span id="numDyingCells"></span></div>
     </div>
   </div>
-<script>
-  const FPS = 20;
-  const MAX_INITIAL_LOOPS = 500;
+  <script src="./game-browser.js"></script>
+  <script>
+    const numColumnsInput = document.getElementById('numColumnsInput');
+    const numRowsInput = document.getElementById('numRowsInput');
+    const densityInput = document.getElementById('densityInput');
 
-  const CELL_SIZE = 15;
-  const CELL_RADIUS = CELL_SIZE / 2;
-  const PADDING = CELL_SIZE / 2;
+    function onChange() {
+      const numColumns = parseInt(numColumnsInput.value);
+      const numRows = parseInt(numRowsInput.value);
+      const density = parseInt(densityInput.value) / 100;
 
-  // TODO Initialize from URL
-  const numColumns = parseInt('24');
-  const numRows = parseInt('12');
-  const liveCellDensity = parseInt('25') / 100;
-
-  const height = numRows * CELL_SIZE + PADDING * 2;
-  const width = numColumns * CELL_SIZE + PADDING * 2;
-
-  let context;
-  let loopIndexElement;
-  let maxLoopIndexElement;
-  let numDyingCellsElement;
-  let numLiveCellsElement;
-
-  {
-    // Initialize canvas
-    const scale = window.devicePixelRatio;
-    const canvas = document.getElementById('canvas');
-    canvas.style.height = `${height}px`;
-    canvas.style.width = `${width}px`;
-    canvas.height = height * scale;
-    canvas.width = width * scale;
-
-    context = document.getElementById("canvas").getContext("2d");
-    context.scale(scale, scale);
-  }
-
-  {
-    // Initialize DOM
-
-    loopIndexElement = document.getElementById('loopIndex');
-    maxLoopIndexElement = document.getElementById('maxLoopIndex');
-    numDyingCellsElement = document.getElementById('numDyingCells');
-    numLiveCellsElement = document.getElementById('numLiveCells');
-
-    const dyingCellElement = document.getElementById('dyingCell');
-    dyingCellElement.style.height = `${CELL_SIZE}px`;
-    dyingCellElement.style.width = `${CELL_SIZE}px`;
-
-    const liveCellElement = document.getElementById('liveCell');
-    liveCellElement.style.height = `${CELL_SIZE}px`;
-    liveCellElement.style.width = `${CELL_SIZE}px`;
-
-  }
-
-  function spaceBetween(numCharacters, ...texts) {
-    if (texts.length <= 1) {
-      return texts.join('');
+      initialize(numColumns, numRows, density);
     }
 
-    const lastText = texts[texts.length - 1];
-    const availableSpace = numCharacters - removeFormatting(lastText).length;
-    const columnWidth = availableSpace / Math.floor(texts.length - 1);
+    numColumnsInput.addEventListener('input', onChange);
+    numRowsInput.addEventListener('input', onChange);
+    densityInput.addEventListener('input', onChange);
 
-    return texts.map(text => {
-      const textLength = removeFormatting(text).length;
-      const numTrailingSpaces = Math.max(1, columnWidth - textLength)
-
-      return text + ' '.repeat(numTrailingSpaces);
-    }).join('');
-  }
-
-  function compute(prevState) {
-    const {liveCells: prevLiveCells, numColumns, numRows} = prevState;
-
-    let nextLiveCells = [];
-
-    const nextState = {
-      ...prevState,
-      liveCells: nextLiveCells,
-    };
-
-    const length = numColumns * numRows;
-    for (let index = 0; index < length; index++) {
-      const isAlive = prevLiveCells.includes(index);
-
-      const numLiveNeighbors = getLiveNeighborCount(prevState, index);
-
-      if (isAlive) {
-        switch (numLiveNeighbors) {
-          case 0:
-          case 1: {
-            // Underpopulation
-            break;
-          }
-          case 2:
-          case 3: {
-            // Survival
-            nextLiveCells.push(index);
-            break;
-          }
-          default: {
-            // Overpopulation
-            break;
-          }
-        }
-      } else {
-        switch (numLiveNeighbors) {
-          case 3: {
-            // Reproduction
-            nextLiveCells.push(index);
-            break;
-          }
-        }
-      }
-    }
-
-    return nextState;
-  }
-
-  function getLiveNeighborCount(state, index) {
-    const { liveCells, numColumns, numRows } = state;
-
-    let liveNeighborCount = 0;
-
-    const rowIndex = Math.floor(index / numColumns);
-    const columnIndex = index % numColumns;
-
-    const maxColumnIndex = numColumns - 1;
-    const maxRowIndex = numRows - 1;
-
-    const length = numColumns * numRows;
-
-    const indices = [];
-
-    if (rowIndex > 0) {
-      // Above
-      indices.push(index - numColumns);
-    }
-
-    if (rowIndex < maxRowIndex) {
-      // Below
-      indices.push(index + numColumns);
-    }
-
-    if (columnIndex > 0) {
-      if (rowIndex > 0) {
-        // Diagonal above and left
-        indices.push(index - numColumns - 1);
-      }
-      // Left
-      indices.push(index - 1);
-      if (rowIndex < maxRowIndex) {
-        // Diagonal below and left
-        indices.push(index + numColumns - 1);
-      }
-    }
-
-    if (columnIndex < maxColumnIndex) {
-      if (rowIndex > 0) {
-        // Diagonal above and right
-        indices.push(index - numColumns + 1);
-      }
-      // Right
-      indices.push(index + 1);
-      if (rowIndex < maxRowIndex) {
-        // Diagonal below and right
-        indices.push(index + numColumns + 1);
-      }
-    }
-
-    indices.forEach(index => {
-      const isAlive = liveCells.includes(index);
-      if (isAlive) {
-        liveNeighborCount++;
-      }
-    })
-
-    return liveNeighborCount;
-  }
-
-  function draw(state, prevState = {}) {
-    const {liveCells, numColumns, numRows} = state;
-    const {liveCells: prevLiveCells = []} = prevState;
-
-    context.clearRect(0, 0, width, height);
-    context.strokeStyle = '#ccc';
-    context.beginPath();
-    context.roundRect(0, 0, width, height, CELL_RADIUS);
-    context.stroke();
-
-    let totalDyingCells = 0;
-    let totalLiveCells = 0;
-
-    const length = numColumns * numRows;
-    for (let index = 0; index < length; index++) {
-      const rowIndex = Math.floor(index / numColumns);
-      const columnIndex = index % numColumns;
-
-      const x = PADDING + columnIndex * CELL_SIZE;
-      const y = PADDING + rowIndex * CELL_SIZE;
-
-      const wasAlive = prevLiveCells.includes(index);
-      const isAlive = liveCells.includes(index);
-      if (isAlive) {
-        context.fillStyle = 'green';
-        context.strokeStyle = 'black';
-        context.beginPath();
-        context.arc(x + CELL_RADIUS, y + CELL_RADIUS, CELL_RADIUS, 0, 2 * Math.PI);
-        context.fill();
-        context.stroke();
-
-        totalLiveCells++;
-      } else if (wasAlive) {
-        context.fillStyle = 'none';
-        context.strokeStyle = 'grey';
-        context.setLineDash([2, 1]);
-        context.beginPath();
-        context.arc(x + CELL_RADIUS, y + CELL_RADIUS, CELL_RADIUS, 0, 2 * Math.PI);
-        context.stroke();
-
-        totalDyingCells++;
-      }
-    }
-
-    loopIndexElement.innerText = loopIndex + 1;
-    maxLoopIndexElement.innerText = maxLoopIndex !== 0 ? ` of ${maxLoopIndex}` : '';
-    numDyingCellsElement.textContent = totalDyingCells;
-    numLiveCellsElement.textContent = totalLiveCells;
-
-    // Useful for debugging
-    // console.log(state);
-  }
-
-  const initialLiveCells = new Array(numColumns * numRows)
-    .fill(0)
-    .reduce((liveCells, cell, index) => {
-      if (Math.random() < liveCellDensity) {
-        liveCells.push(index);
-      }
-      return liveCells;
-    }, []);
-
-  let state = {
-    liveCells: initialLiveCells,
-    numColumns,
-    numRows,
-  };
-
-  let loopIndex = 0;
-  let maxLoopIndex = 0;
-
-  const serializedStates = new Set();
-
-  // Find max cycles
-  {
-    let clonedState = {...state};
-
-    while (loopIndex < MAX_INITIAL_LOOPS) {
-      const serialized = clonedState.liveCells.join(',');
-      if (serializedStates.has(serialized)) {
-        maxLoopIndex = loopIndex - 1;
-        break;
-      } else {
-        serializedStates.add(serialized);
-      }
-
-      loopIndex++;
-      clonedState = compute(clonedState);
-    }
-  }
-
-  loopIndex = 0;
-
-  async function run(delay) {
-    loopIndex++;
-
-    if (maxLoopIndex != null && loopIndex === maxLoopIndex) {
-      loopIndex = 0;
-      state = {
-        ...state,
-        liveCells: initialLiveCells,
-      };
-    }
-
-    const prevState = {...state};
-
-    state = compute(state);
-
-    draw(state, prevState);
-
-    setTimeout(() => {
-      run(delay);
-    }, delay);
-  }
-
-  run(1000 / FPS);
-</script>
+    onChange();
+  </script>
 </body>
 </html>

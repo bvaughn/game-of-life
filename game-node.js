@@ -109,8 +109,6 @@ function getLiveNeighborCount(state, index) {
   const maxColumnIndex = numColumns - 1;
   const maxRowIndex = numRows - 1;
 
-  const length = numColumns * numRows;
-
   const indices = [];
 
   if (rowIndex > 0) {
