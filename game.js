@@ -1,4 +1,4 @@
-const FPS = 24;
+const FPS = 20;
 
 const numColumns = parseInt(process.argv[2] ?? '12');
 const numRows = parseInt(process.argv[3] ?? '12');
@@ -218,8 +218,6 @@ let state = {
 
 let loopIndex = 0;
 
-print(state)
-
 async function loop() {
   loopIndex++;
 
@@ -237,6 +235,7 @@ async function loop() {
     };
   }
 
+  setTimeout(loop, 1000 / FPS)
 }
 
-const interval = setInterval(loop, 1000 / FPS);
+loop();
