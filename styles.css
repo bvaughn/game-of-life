@@ -1,8 +1,22 @@
+:root {
+  --black: #111;
+  --dark-gray: #333;
+  --light-gray: #666;
+  --green: #090;
+  --white: #fff;
+
+  --padding: 10px;
+  --max-cell-size: 15px;
+}
+
 html, body {
-  background-color: #111;
-  color: #fff;
+  background-color: var(--black);
+  color: var(--white);
   font-family: sans-serif;
   font-size: 16px;
+}
+body {
+  padding: var(--padding);
 }
 body, .container {
   display: flex;
@@ -36,7 +50,7 @@ body, .container {
   width: 25%;
 }
 #maxLoopIndex {
-  color: gray;
+  color: var(--light-gray);
 }
 
 #dyingCell,
@@ -45,10 +59,10 @@ body, .container {
   display: inline-block;
 }
 #dyingCell {
-  border: 1px dashed gray;
+  border: 1px dashed var(--light-gray);
 }
 #liveCell {
-  background-color: green;
+  background-color: var(--green);
 }
 
 #restartButton {
@@ -68,5 +82,5 @@ label {
 .icon {
   width: 1.5rem;
   height: 1.5rem;
-  fill: gray;
+  fill: var(--light-gray);
 }

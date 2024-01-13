@@ -1,7 +1,15 @@
 // Game configuration
 const MAX_INITIAL_LOOPS = 500;
-const MAX_CELL_SIZE = 15;
-const PADDING = 10;
+
+const computedStyle = getComputedStyle(document.documentElement);
+const BLACK = computedStyle.getPropertyValue('--black');
+const DARK_GRAY = computedStyle.getPropertyValue('--dark-gray');
+const LIGHT_GRAY = computedStyle.getPropertyValue('--light-gray');
+const GREEN = computedStyle.getPropertyValue('--green');
+const WHITE = computedStyle.getPropertyValue('--white');
+
+const MAX_CELL_SIZE = parseInt(computedStyle.getPropertyValue('--max-cell-size'));
+const PADDING = parseInt(computedStyle.getPropertyValue('--padding'));
 
 let timeout = null;
 
@@ -97,7 +105,7 @@ function initialize(numColumns, numRows, cellDensity, framerate) {
     const { liveCells: prevLiveCells = [] } = prevState;
   
     context.clearRect(0, 0, width, height);
-    context.strokeStyle = "#ccc";
+    context.strokeStyle = DARK_GRAY;
     context.beginPath();
     context.roundRect(0, 0, width, height, CELL_RADIUS);
     context.stroke();
@@ -116,8 +124,9 @@ function initialize(numColumns, numRows, cellDensity, framerate) {
       const wasAlive = prevLiveCells.includes(index);
       const isAlive = liveCells.includes(index);
       if (isAlive) {
-        context.fillStyle = "green";
-        context.strokeStyle = "black";
+        context.fillStyle = GREEN;
+        context.strokeStyle = BLACK;
+        context.setLineDash([]);
         context.beginPath();
         context.arc(
           x + CELL_RADIUS,
@@ -132,7 +141,7 @@ function initialize(numColumns, numRows, cellDensity, framerate) {
         totalLiveCells++;
       } else if (wasAlive) {
         context.fillStyle = "none";
-        context.strokeStyle = "grey";
+        context.strokeStyle = LIGHT_GRAY;
         context.setLineDash([2, 1]);
         context.beginPath();
         context.arc(
