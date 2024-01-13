@@ -1,5 +1,6 @@
 :root {
   --black: #111;
+  --almost-black: #222;
   --dark-gray: #333;
   --light-gray: #666;
   --green: #090;
@@ -65,14 +66,6 @@ body, .container {
   background-color: var(--green);
 }
 
-#restartButton {
-  background: transparent;
-  border: none;
-  outline: none;
-  padding: 0;
-  cursor: pointer;
-}
-
 label {
   display: flex;
   align-content: center;
@@ -83,4 +76,26 @@ label {
   width: 1.5rem;
   height: 1.5rem;
   fill: var(--light-gray);
+}
+
+#restartButton {
+  background-color: var(--almost-black);
+  padding: 0.25rem 1ch;
+  border-radius: 0.25rem;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  color: var(--white);
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 1ch;
+}
+#restartButton .icon {
+  fill: var(--white);
+}
+#restartButton:hover {
+  background-color: #333;
 }
