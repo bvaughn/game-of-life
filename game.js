@@ -1,4 +1,5 @@
 const FPS = 20;
+const MAX_INITIAL_LOOPS = 500;
 
 const numColumns = parseInt(process.argv[2] ?? '12');
 const numRows = parseInt(process.argv[3] ?? '12');
@@ -186,12 +187,16 @@ function print(state, prevState = {}) {
     }
   }
 
+  const loopLabel = maxLoopIndex !== 0
+    ? `${FORMAT.yellow(loopIndex + 1)}${FORMAT.gray(`/${maxLoopIndex}`)}`
+    : FORMAT.yellow(loopIndex + 1);
+
   console.clear();
   console.log(drawBoxAround(string));
   console.log(
     spaceBetween(
       numColumns + 2, // Padding for box sides
-      FORMAT.yellow(loopIndex + 1),
+      loopLabel,
       `${FORMAT.green('◍')} ${totalLiveCells}`,
       `${FORMAT.gray('◌')} ${totalDyingCells}`,
     )
@@ -217,17 +222,34 @@ let state = {
 };
 
 let loopIndex = 0;
+let maxLoopIndex = 0;
 
-async function loop() {
+const serializedStates = new Set();
+
+// Find max cycles
+{
+  let clonedState = {...state};
+
+  while (loopIndex < MAX_INITIAL_LOOPS) {
+    const serialized = clonedState.liveCells.join(',');
+    if (serializedStates.has(serialized)) {
+      maxLoopIndex = loopIndex - 1;
+      break;
+    } else {
+      serializedStates.add(serialized);
+    }
+
+    loopIndex++;
+    clonedState = compute(clonedState);
+  }
+}
+
+loopIndex = 0;
+
+async function run(delay) {
   loopIndex++;
 
-  const prevState = {...state};
-
-  state = compute(state);
-
-  print(state, prevState);
-
-  if (JSON.stringify(prevState) === JSON.stringify(state)) {
+  if (maxLoopIndex != null && loopIndex === maxLoopIndex) {
     loopIndex = 0;
     state = {
       ...state,
@@ -235,7 +257,15 @@ async function loop() {
     };
   }
 
-  setTimeout(loop, 1000 / FPS)
+  const prevState = {...state};
+
+  state = compute(state);
+
+  print(state, prevState);
+
+  setTimeout(() => {
+    run(delay);
+  }, delay);
 }
 
-loop();
+run(1000 / FPS);
