@@ -49,3 +49,17 @@ body, .container {
 #liveCell {
   background-color: green;
 }
+
+#restartButton {
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.restartIcon {
+  width: 2rem;
+  height: 2rem;
+  fill: #fff;
+}
