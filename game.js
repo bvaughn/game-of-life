@@ -1,3 +1,48 @@
+const FPS = 24;
+
+const FORMAT = {
+  gray: text => '\x1b[90m' + text + '\x1b[0m',
+  green: text => '\x1b[32m' + text + '\x1b[0m',
+  yellow: text => '\x1b[33m' + text + '\x1b[0m',
+}
+
+function drawBoxAround(string) {
+  const lines = string.split('\n');
+  const numColumns = lines.reduce((longestLine, line) => {
+    return Math.max(longestLine, removeFormatting(line).length)
+  }, 0)
+
+  string = '';
+  string += FORMAT.gray('┌' + '─'.repeat(numColumns) + '┐');
+  string += '\n';
+  string += lines.map(line => {
+    return FORMAT.gray('│') + line + ' '.repeat(numColumns - removeFormatting(line).length) + FORMAT.gray('│')
+  }).join('\n');
+  string += '\n';
+  string += FORMAT.gray('└' + '─'.repeat(numColumns) + '┘');
+
+  return string;;
+}
+
+function removeFormatting(text) {
+  return text.replace(/(\x1b\[[0-9]+m)/g, '');
+}
+
+function justify(leftText, rightText, numColumns) {
+  const leftChars = removeFormatting(leftText).length;
+  const rightChars = removeFormatting(rightText).length;
+
+  const spaces = Math.max(1, numColumns - (leftChars + rightChars));
+
+  return leftText + ' '.repeat(spaces) + rightText;
+}
+
+const CELLS = {
+  DEAD: ' ',
+  DYING: FORMAT.gray('◌'),
+  LIVE: FORMAT.green('◍'),
+};
+
 function compute(prevState) {
   const {liveCells: prevLiveCells, numColumns, numRows} = prevState;
 
@@ -51,42 +96,65 @@ function getLiveNeighborCount(state, index) {
 
   let liveNeighborCount = 0;
 
+  const rowIndex = Math.floor(index / numColumns);
+  const columnIndex = index % numColumns;
+
+  const maxColumnIndex = numColumns - 1;
+  const maxRowIndex = numRows - 1;
+
   const length = numColumns * numRows;
 
-  ([
-    // Diagonal above and left
-    index - numColumns - 1,
+  const indices = [
     // Above
     index - numColumns,
-    // Diagonal above and right
-    index - numColumns + 1,
-    // Left
-    index - 1,
-    // Right
-    index + 1,
-    // Diagonal below and left
-    index + numColumns - 1,
     // Below
     index + numColumns,
-    // Diagonal below and right
-    index + numColumns + 1,
-  ]).forEach(index => {
-    if (index >= 0 && index < length) {
-      const isAlive = liveCells.includes(index);
-      if (isAlive) {
-        liveNeighborCount++;
-      }
+  ];
+
+  if (columnIndex > 0) {
+    if (rowIndex > 0) {
+      // Diagonal above and left
+      indices.push(index - numColumns - 1);
+    }
+    // Left
+    indices.push(index - 1);
+    if (rowIndex < maxRowIndex) {
+      // Diagonal below and left
+      indices.push(index + numColumns - 1);
+    }
+  }
+
+  if (columnIndex < maxColumnIndex) {
+    if (rowIndex > 0) {
+      // Diagonal above and right
+      indices.push(index - numColumns + 1);
+    }
+    // Right
+    indices.push(index + 1);
+    if (rowIndex < maxRowIndex) {
+      // Diagonal below and right
+      indices.push(index + numColumns + 1);
+    }
+  }
+
+  indices.forEach(index => {
+    const isAlive = liveCells.includes(index);
+    if (isAlive) {
+      liveNeighborCount++;
     }
   })
 
   return liveNeighborCount;
 }
 
-function print(header, state, prevState = {}) {
+function print(state, prevState = {}) {
   const {liveCells, numColumns, numRows} = state;
   const {liveCells: prevLiveCells = []} = prevState;
 
-  let string = "";
+  let string = '';
+
+  let totalDyingCells = 0;
+  let totalLiveCells = 0;
 
   const length = numColumns * numRows;
   for (let index = 0; index < length; index++) {
@@ -96,31 +164,43 @@ function print(header, state, prevState = {}) {
 
     const wasAlive = prevLiveCells.includes(index);
     const isAlive = liveCells.includes(index);
+    if (isAlive) {
+      totalLiveCells++;
+    } else if (wasAlive) {
+      totalDyingCells++;
+    }
 
     string += isAlive
-      ? '\x1b[32m◍\x1b[0m'
+      ? CELLS.LIVE
       : wasAlive
-        ? '\x1b[90m◌\x1b[0m'
-        : ' ';
+        ? CELLS.DYING
+        : CELLS.DEAD;
   }
 
+  string = drawBoxAround(string);
+
+  string += '\n ' + justify(FORMAT.yellow(loopIndex + 1), `${CELLS.LIVE} ${totalLiveCells} ${CELLS.DYING} ${totalDyingCells}`, numColumns);
+
   console.clear();
-  console.log(`${header}\n${string}\n`);
+  console.log(string);
+
+  // Useful for debugging
+  // console.log(state);
 }
 
 const initialState = [
-  0,1,1,0,0,0,0,0,0,
-  0,0,0,1,0,0,0,0,0,
-  0,0,0,0,1,0,0,0,0,
-  0,0,0,1,0,0,0,0,0,
-  0,0,1,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,1,0,0,0,
-  0,0,0,0,1,1,1,1,0,
-  0,0,0,1,1,1,0,0,0,
-  0,0,0,0,1,0,1,0,0,
-  0,0,0,0,0,1,0,0,0,
-  0,0,0,0,0,1,0,0,0,
+  0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+  0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,
+  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+  0,0,0,0,0,1,1,1,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,
+  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,
+  0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,
+  0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+  0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+  0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,
+  0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
+  0,0,0,0,1,0,1,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,
 ];
 
 const initialLiveCells = initialState.reduce((liveCells, cell, index) => {
@@ -132,25 +212,25 @@ const initialLiveCells = initialState.reduce((liveCells, cell, index) => {
 
 let state = {
   liveCells: initialLiveCells,
-  numColumns: 9,
+  numColumns: 24,
   numRows: 12,
 };
 
-print(`Initial state`, state);
+let loopIndex = 0;
 
-let index = 0;
+print(state);
 
 async function loop() {
-  index++;
+  loopIndex++;
 
   const prevState = {...state};
 
   state = compute(state);
 
-  print(`Iteration \x1b[33m\x1b[1m${index + 1}\x1b[0m`, state, prevState);
+  print(state, prevState);
 
   if (JSON.stringify(prevState) === JSON.stringify(state)) {
-    index = 0;
+    loopIndex = 0;
     state = {
       ...state,
       liveCells: initialLiveCells,
@@ -159,4 +239,4 @@ async function loop() {
 
 }
 
-const interval = setInterval(loop, 100);
+const interval = setInterval(loop, 1000 / FPS);
