@@ -37,12 +37,6 @@ function justify(leftText, rightText, numColumns) {
   return leftText + ' '.repeat(spaces) + rightText;
 }
 
-const CELLS = {
-  DEAD: ' ',
-  DYING: FORMAT.gray('◌'),
-  LIVE: FORMAT.green('◍'),
-};
-
 function compute(prevState) {
   const {liveCells: prevLiveCells, numColumns, numRows} = prevState;
 
@@ -165,24 +159,25 @@ function print(state, prevState = {}) {
     const wasAlive = prevLiveCells.includes(index);
     const isAlive = liveCells.includes(index);
     if (isAlive) {
+      string += FORMAT.green('◍');
       totalLiveCells++;
     } else if (wasAlive) {
+      string += FORMAT.gray('◌');
       totalDyingCells++;
+    } else {
+      string += ' ';
     }
-
-    string += isAlive
-      ? CELLS.LIVE
-      : wasAlive
-        ? CELLS.DYING
-        : CELLS.DEAD;
   }
 
-  string = drawBoxAround(string);
-
-  string += '\n ' + justify(FORMAT.yellow(loopIndex + 1), `${CELLS.LIVE} ${totalLiveCells} ${CELLS.DYING} ${totalDyingCells}`, numColumns);
-
   console.clear();
-  console.log(string);
+  console.log(drawBoxAround(string));
+  console.log(
+    ' ' + justify(
+      FORMAT.yellow(loopIndex + 1),
+      `${FORMAT.green('◍')} ${totalLiveCells} ${FORMAT.gray('◌')} ${totalDyingCells}`,
+      numColumns
+    )
+  );
 
   // Useful for debugging
   // console.log(state);
