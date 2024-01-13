@@ -228,6 +228,8 @@ const serializedStates = new Set();
 
 // Find max cycles
 {
+  console.log('Analyzing...');
+
   let clonedState = {...state};
 
   while (loopIndex < MAX_INITIAL_LOOPS) {
