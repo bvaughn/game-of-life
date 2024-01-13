@@ -1,12 +1,11 @@
 // Game configuration
-const FPS = 20;
 const MAX_INITIAL_LOOPS = 500;
 const MAX_CELL_SIZE = 15;
 const PADDING = 10;
 
 let timeout = null;
 
-function initialize(numColumns, numRows, cellDensity) {
+function initialize(numColumns, numRows, cellDensity, framerate) {
   if (timeout !== null) {
     clearTimeout(timeout);
   }
@@ -181,7 +180,7 @@ function initialize(numColumns, numRows, cellDensity) {
     }, delay);
   }
 
-  next(1000 / FPS);
+  next(1000 / framerate);
 }
 
 function compute(prevState) {

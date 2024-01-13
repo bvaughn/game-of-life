@@ -2,6 +2,7 @@
 <head>
   <link rel="stylesheet" href="./styles.css">
   <meta name="viewport" content="width=device-width, user-scalable=no" />
+  <title>Game of life</title>
 </head>
 <body>
   <div class="container">
@@ -11,23 +12,28 @@
           <rect fill="none" height="24" width="24"/>
           <path d="M14.67,5v14H9.33V5H14.67z M15.67,19H21V5h-5.33V19z M8.33,19V5H3v14H8.33z"/>
         </svg>
-        <input id="numColumnsInput" inputmode="decimal" min="1" max="100" placeholder="Number of columns" type="number" value="24" />
+        <input id="numColumnsInput" inputmode="decimal" min="1" max="50" placeholder="Number of columns" type="number" value="24" />
       </label>
       <label>
         <svg class="icon" viewBox="0 0 24 24">
           <rect fill="none" height="24" width="24"/>
           <path d="M21,8H3V4h18V8z M21,10H3v4h18V10z M21,16H3v4h18V16z"/>
         </svg>
-        <input id="numRowsInput" inputmode="decimal" min="1" max="100" placeholder="Number of rows" type="number" value="12" />
+        <input id="numRowsInput" inputmode="decimal" min="1" max="50" placeholder="Number of rows" type="number" value="12" />
       </label>
       <label>
         <svg class="icon" viewBox="0 0 24 24">
           <rect fill="none" height="24" width="24"/>
-          <path d="M7.5,11C9.43,11,11,9.43,11,7.5S9.43,4,7.5,4S4,5.57,4,7.5S5.57,11,7.5,11z M7.5,6C8.33,6,9,6.67,9,7.5S8.33,9,7.5,9 S6,8.33,6,7.5S6.67,6,7.5,6z"/>
-          <rect height="2" transform="matrix(0.7071 -0.7071 0.7071 0.7071 -4.9706 12)" width="20.63" x="1.69" y="11"/>
-          <path d="M16.5,13c-1.93,0-3.5,1.57-3.5,3.5s1.57,3.5,3.5,3.5s3.5-1.57,3.5-3.5S18.43,13,16.5,13z M16.5,18 c-0.83,0-1.5-0.67-1.5-1.5s0.67-1.5,1.5-1.5s1.5,0.67,1.5,1.5S17.33,18,16.5,18z"/>
+          <path d="M21.25,10.5c-0.41,0-0.75,0.34-0.75,0.75h-1.54c-0.15-1.37-0.69-2.63-1.52-3.65l1.09-1.09l0.01,0.01 c0.29,0.29,0.77,0.29,1.06,0s0.29-0.77,0-1.06L18.54,4.4c-0.29-0.29-0.77-0.29-1.06,0c-0.29,0.29-0.29,0.76-0.01,1.05l-1.09,1.09 c-1.02-0.82-2.27-1.36-3.64-1.51V3.5h0.01c0.41,0,0.75-0.34,0.75-0.75C13.5,2.34,13.16,2,12.75,2h-1.5c-0.41,0-0.75,0.34-0.75,0.75 c0,0.41,0.33,0.74,0.74,0.75v1.55C9.87,5.19,8.62,5.74,7.6,6.56L6.51,5.47l0.01-0.01c0.29-0.29,0.29-0.77,0-1.06 c-0.29-0.29-0.77-0.29-1.06,0L4.4,5.46c-0.29,0.29-0.29,0.77,0,1.06c0.29,0.29,0.76,0.29,1.05,0.01l1.09,1.09 c-0.82,1.02-1.36,2.26-1.5,3.63H3.5c0-0.41-0.34-0.75-0.75-0.75C2.34,10.5,2,10.84,2,11.25v1.5c0,0.41,0.34,0.75,0.75,0.75 c0.41,0,0.75-0.34,0.75-0.75h1.54c0.15,1.37,0.69,2.61,1.5,3.63l-1.09,1.09c-0.29-0.29-0.76-0.28-1.05,0.01 c-0.29,0.29-0.29,0.77,0,1.06l1.06,1.06c0.29,0.29,0.77,0.29,1.06,0c0.29-0.29,0.29-0.77,0-1.06l-0.01-0.01l1.09-1.09 c1.02,0.82,2.26,1.36,3.63,1.51v1.55c-0.41,0.01-0.74,0.34-0.74,0.75c0,0.41,0.34,0.75,0.75,0.75h1.5c0.41,0,0.75-0.34,0.75-0.75 c0-0.41-0.34-0.75-0.75-0.75h-0.01v-1.54c1.37-0.14,2.62-0.69,3.64-1.51l1.09,1.09c-0.29,0.29-0.28,0.76,0.01,1.05 c0.29,0.29,0.77,0.29,1.06,0l1.06-1.06c0.29-0.29,0.29-0.77,0-1.06c-0.29-0.29-0.77-0.29-1.06,0l-0.01,0.01l-1.09-1.09 c0.82-1.02,1.37-2.27,1.52-3.65h1.54c0,0.41,0.34,0.75,0.75,0.75c0.41,0,0.75-0.34,0.75-0.75v-1.5C22,10.84,21.66,10.5,21.25,10.5z M13.75,8c0.55,0,1,0.45,1,1s-0.45,1-1,1s-1-0.45-1-1S13.2,8,13.75,8z M12,13c-0.55,0-1-0.45-1-1c0-0.55,0.45-1,1-1s1,0.45,1,1 C13,12.55,12.55,13,12,13z M10.25,8c0.55,0,1,0.45,1,1s-0.45,1-1,1s-1-0.45-1-1S9.7,8,10.25,8z M8.5,13c-0.55,0-1-0.45-1-1 c0-0.55,0.45-1,1-1s1,0.45,1,1C9.5,12.55,9.05,13,8.5,13z M10.25,16c-0.55,0-1-0.45-1-1c0-0.55,0.45-1,1-1s1,0.45,1,1 C11.25,15.55,10.8,16,10.25,16z M13.75,16c-0.55,0-1-0.45-1-1c0-0.55,0.45-1,1-1s1,0.45,1,1C14.75,15.55,14.3,16,13.75,16z M14.5,12 c0-0.55,0.45-1,1-1s1,0.45,1,1c0,0.55-0.45,1-1,1S14.5,12.55,14.5,12z"/>
         </svg>
         <input id="densityInput" inputmode="decimal" min="1" max="100" placeholder="Cell density" type="number" value="25" />
+      </label>
+      <label>
+        <svg class="icon" viewBox="0 0 24 24">
+          <rect fill="none" height="24" width="24"/>
+          <path d="M20.38 8.57l-1.23 1.85a8 8 0 0 1-.22 7.58H5.07A8 8 0 0 1 15.58 6.85l1.85-1.23A10 10 0 0 0 3.35 19a2 2 0 0 0 1.72 1h13.85a2 2 0 0 0 1.74-1 10 10 0 0 0-.27-10.44zm-9.79 6.84a2 2 0 0 0 2.83 0l5.66-8.49-8.49 5.66a2 2 0 0 0 0 2.83z"></path>
+        </svg>
+        <input id="framerateInput" inputmode="decimal" min="1" max="30" placeholder="Framerate" type="number" value="15" />
       </label>
       <button id="restartButton" title="Restart">
         <svg class="icon" viewBox="0 0 24 24">
@@ -41,23 +47,37 @@
       <div class="statusColumnLeft">
         <span id="loopIndex">1</span><span id="maxLoopIndex">/10</span>
       </div>
-      <div class="statusColumnMiddle"><span id="liveCell">&nbsp;</span> <span id="numLiveCells"></span></div>
-      <div class="statusColumnRight"><span id="dyingCell">&nbsp;</span> <span id="numDyingCells"></span></div>
+      <div class="statusColumnMiddle">
+        <span id="numLiveCells"></span>
+        <span id="liveCell">&nbsp;</span>
+      </div>
+      <div class="statusColumnRight">
+        <span id="numDyingCells"></span>
+        <span id="dyingCell">&nbsp;</span>
+      </div>
     </div>
   </div>
   <script src="./game-browser.js"></script>
   <script>
+    const densityInput = document.getElementById('densityInput');
+    const framerateInput = document.getElementById('framerateInput');
     const numColumnsInput = document.getElementById('numColumnsInput');
     const numRowsInput = document.getElementById('numRowsInput');
-    const densityInput = document.getElementById('densityInput');
     const restartButton = document.getElementById('restartButton');
 
     function restart() {
-      const numColumns = parseInt(numColumnsInput.value);
-      const numRows = parseInt(numRowsInput.value);
-      const density = parseInt(densityInput.value) / 100;
+      const density = Math.max(0, Math.min(100, parseInt(densityInput.value)));
+      const numColumns = Math.max(1, Math.min(50, parseInt(numColumnsInput.value)));
+      const numRows = Math.max(1, Math.min(50, parseInt(numRowsInput.value)));
+      const framerate = Math.max(1, Math.min(30, parseInt(framerateInput.value)));
+      console.log('framerate', framerate)
 
-      initialize(numColumns, numRows, density);
+      densityInput.value = density;
+      framerateInput.value = framerate;
+      numColumnsInput.value = numColumns;
+      numRowsInput.value = numRows;
+
+      initialize(numColumns, numRows, density / 100, framerate);
     }
 
     restartButton.addEventListener('click', restart);
@@ -71,9 +91,10 @@
       }
     }
 
+    densityInput.addEventListener('keydown', restartOnEnter);
+    framerateInput.addEventListener('keydown', restartOnEnter);
     numColumnsInput.addEventListener('keydown', restartOnEnter);
     numRowsInput.addEventListener('keydown', restartOnEnter);
-    densityInput.addEventListener('keydown', restartOnEnter);
 
     restart();
   </script>

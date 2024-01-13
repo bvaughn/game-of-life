@@ -1,6 +1,4 @@
 html, body {
-  width: 100vw;
-  height: 100vh;
   background-color: #111;
   color: #fff;
   font-family: sans-serif;
@@ -11,7 +9,6 @@ body, .container {
   flex-direction: column;
   gap: 1rem;
   align-items: center;
-  justify-content: center;
 }
 .topRow {
   width: 100%;
@@ -31,8 +28,12 @@ body, .container {
 }
 .statusColumnMiddle,
 .statusColumnRight {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1ch;
   width: 25%;
-  text-align: right;
 }
 #maxLoopIndex {
   color: gray;
@@ -67,5 +68,5 @@ label {
 .icon {
   width: 1.5rem;
   height: 1.5rem;
-  fill: #fff;
+  fill: gray;
 }
