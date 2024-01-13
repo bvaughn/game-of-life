@@ -1,5 +1,9 @@
 const FPS = 24;
 
+const numColumns = parseInt(process.argv[2] ?? '12');
+const numRows = parseInt(process.argv[3] ?? '12');
+const liveCellDensity = parseInt(process.argv[4] ?? '25') / 100;
+
 const FORMAT = {
   gray: text => '\x1b[90m' + text + '\x1b[0m',
   green: text => '\x1b[32m' + text + '\x1b[0m',
@@ -28,13 +32,21 @@ function removeFormatting(text) {
   return text.replace(/(\x1b\[[0-9]+m)/g, '');
 }
 
-function justify(leftText, rightText, numColumns) {
-  const leftChars = removeFormatting(leftText).length;
-  const rightChars = removeFormatting(rightText).length;
+function spaceBetween(numCharacters, ...texts) {
+  if (texts.length <= 1) {
+    return texts.join('');
+  }
 
-  const spaces = Math.max(1, numColumns - (leftChars + rightChars));
+  const lastText = texts[texts.length - 1];
+  const availableSpace = numCharacters - removeFormatting(lastText).length;
+  const columnWidth = availableSpace / Math.floor(texts.length - 1);
 
-  return leftText + ' '.repeat(spaces) + rightText;
+  return texts.map(text => {
+    const textLength = removeFormatting(text).length;
+    const numTrailingSpaces = Math.max(1, columnWidth - textLength)
+
+    return text + ' '.repeat(numTrailingSpaces);
+  }).join('');
 }
 
 function compute(prevState) {
@@ -98,12 +110,17 @@ function getLiveNeighborCount(state, index) {
 
   const length = numColumns * numRows;
 
-  const indices = [
+  const indices = [];
+
+  if (rowIndex > 0) {
     // Above
-    index - numColumns,
+    indices.push(index - numColumns);
+  }
+
+  if (rowIndex < maxRowIndex) {
     // Below
-    index + numColumns,
-  ];
+    indices.push(index + numColumns);
+  }
 
   if (columnIndex > 0) {
     if (rowIndex > 0) {
@@ -172,10 +189,11 @@ function print(state, prevState = {}) {
   console.clear();
   console.log(drawBoxAround(string));
   console.log(
-    ' ' + justify(
+    spaceBetween(
+      numColumns + 2, // Padding for box sides
       FORMAT.yellow(loopIndex + 1),
-      `${FORMAT.green('◍')} ${totalLiveCells} ${FORMAT.gray('◌')} ${totalDyingCells}`,
-      numColumns
+      `${FORMAT.green('◍')} ${totalLiveCells}`,
+      `${FORMAT.gray('◌')} ${totalDyingCells}`,
     )
   );
 
@@ -183,37 +201,24 @@ function print(state, prevState = {}) {
   // console.log(state);
 }
 
-const initialState = [
-  0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,1,1,1,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,1,0,1,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,
-];
-
-const initialLiveCells = initialState.reduce((liveCells, cell, index) => {
-  if (cell === 1) {
-    liveCells.push(index);
-  }
-  return liveCells;
-}, []);
+const initialLiveCells = new Array(numColumns * numRows)
+  .fill(0)
+  .reduce((liveCells, cell, index) => {
+    if (Math.random() < liveCellDensity) {
+      liveCells.push(index);
+    }
+    return liveCells;
+  }, []);
 
 let state = {
   liveCells: initialLiveCells,
-  numColumns: 24,
-  numRows: 12,
+  numColumns,
+  numRows,
 };
 
 let loopIndex = 0;
 
-print(state);
+print(state)
 
 async function loop() {
   loopIndex++;
