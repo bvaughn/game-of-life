@@ -1,9 +1,8 @@
 // Game configuration
 const FPS = 20;
 const MAX_INITIAL_LOOPS = 500;
-const CELL_SIZE = 15;
-const CELL_RADIUS = CELL_SIZE / 2;
-const PADDING = CELL_SIZE / 2;
+const MAX_CELL_SIZE = 15;
+const PADDING = 10;
 
 let timeout = null;
 
@@ -11,6 +10,9 @@ function initialize(numColumns, numRows, cellDensity) {
   if (timeout !== null) {
     clearTimeout(timeout);
   }
+
+  const CELL_SIZE = Math.min(MAX_CELL_SIZE, Math.floor((window.innerWidth - PADDING * 4) / numColumns));
+  const CELL_RADIUS = CELL_SIZE / 2;
 
   const height = numRows * CELL_SIZE + PADDING * 2;
   const width = numColumns * CELL_SIZE + PADDING * 2;
@@ -146,7 +148,7 @@ function initialize(numColumns, numRows, cellDensity) {
         totalDyingCells++;
       }
     }
-  
+
     loopIndexElement.innerText = loopIndex + 1;
     maxLoopIndexElement.innerText =
       maxLoopIndex !== 0 ? ` of ${maxLoopIndex}` : "";
