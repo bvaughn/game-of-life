@@ -10,6 +10,7 @@ export interface State {
 export interface Game {
   analyze(maxStates: Number): Promise<void>;
   analyzeSync(maxStates: Number): void;
+  cellMovement: number;
   getState(index: number): State;
   numColumns: number;
   numRows: number;
@@ -17,10 +18,12 @@ export interface Game {
 }
 
 export function createGame({
+  cellMovement = 0,
   liveCellDensity,
   numColumns,
   numRows,
 }: {
+  cellMovement?: number;
   liveCellDensity: number;
   numColumns: number;
   numRows: number;
@@ -102,6 +105,7 @@ export function createGame({
         serializedStates.add(serialized);
       }
     },
+    cellMovement,
     getState: (index) => {
       const state = states[index];
       assert(state !== undefined);
@@ -116,7 +120,7 @@ export function createGame({
 }
 
 function computeNextState(game: Game, prevState: State): State {
-  const { numColumns, numRows } = game;
+  const { cellMovement, numColumns, numRows } = game;
   const { liveCells: prevLiveCells } = prevState;
 
   const totalCellCount = numColumns * numRows;
@@ -163,6 +167,45 @@ function computeNextState(game: Game, prevState: State): State {
         }
       }
     }
+  }
+
+  if (cellMovement > 0) {
+    console.group("move");
+    nextLiveCells = nextLiveCells.map((index) => {
+      const rowIndex = Math.floor(index / numColumns);
+      const columnIndex = index % numColumns;
+
+      if (Math.random() < cellMovement) {
+        // Cells can move in any direction within the board in "normal" space
+        // aka no PacMan style movements.
+
+        const newIndices: number[] = [];
+        if (rowIndex > 0) {
+          // Move up
+          newIndices.push(index - numColumns);
+        }
+        if (rowIndex < numRows - 1) {
+          // Move down
+          newIndices.push(index + numColumns);
+        }
+        if (columnIndex > 0) {
+          // Move left
+          newIndices.push(index - 1);
+        }
+        if (columnIndex < numColumns - 1) {
+          // Move right
+          newIndices.push(index + 1);
+        }
+
+        const randomIndex = Math.floor(Math.random() * newIndices.length);
+        const newIndex = newIndices[randomIndex];
+
+        return newIndex ?? index;
+      }
+
+      return index;
+    });
+    console.groupEnd();
   }
 
   const nextState: State = {

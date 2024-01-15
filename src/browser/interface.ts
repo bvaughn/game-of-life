@@ -4,6 +4,7 @@ import {
   COLORS,
   MAX_CELL_COUNT,
   MAX_CELL_DENSITY,
+  MAX_CELL_MOVEMENT,
   MAX_FRAMERATE,
   MAX_INITIAL_LOOPS,
 } from "../config";
@@ -21,6 +22,9 @@ const buttonElements = {
 };
 
 const inputElements = {
+  cellMovement: document.getElementById(
+    "cellMovementInput",
+  ) as HTMLInputElement,
   density: document.getElementById("densityInput") as HTMLInputElement,
   framerate: document.getElementById("framerateInput") as HTMLInputElement,
   numCells: document.getElementById("numCellsInput") as HTMLInputElement,
@@ -47,6 +51,7 @@ const canvas = document.getElementById("canvas") as HTMLCanvasElement;
   document.body.style.setProperty("--cell-gap", `${CELL_GAP}px`);
 }
 
+inputElements.cellMovement.max = "" + MAX_CELL_MOVEMENT;
 inputElements.density.max = "" + MAX_CELL_DENSITY;
 inputElements.numCells.max = "" + MAX_CELL_COUNT;
 inputElements.framerate.max = "" + MAX_FRAMERATE;
@@ -101,6 +106,10 @@ async function startNewGame() {
   gameStateIndex = 0;
   isPlaying = false;
 
+  const cellMovement = Math.max(
+    0,
+    Math.min(MAX_CELL_MOVEMENT, parseInt(inputElements.cellMovement.value)),
+  );
   const liveCellDensity = Math.max(
     0,
     Math.min(100, parseInt(inputElements.density.value)),
@@ -115,6 +124,7 @@ async function startNewGame() {
     Math.min(30, parseInt(inputElements.framerate.value)),
   );
 
+  inputElements.cellMovement.value = "" + cellMovement;
   inputElements.density.value = "" + liveCellDensity;
   inputElements.framerate.value = "" + framerate;
   inputElements.numCells.value = "" + numCells;
@@ -138,6 +148,7 @@ async function startNewGame() {
   canvasContainer.removeAttribute("data-ready");
 
   game = createGame({
+    cellMovement: cellMovement / 100,
     liveCellDensity: liveCellDensity / 100,
     numColumns,
     numRows,
