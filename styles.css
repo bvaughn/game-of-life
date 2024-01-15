@@ -17,7 +17,7 @@ body,
   align-items: center;
 }
 .container {
-  padding: var(--padding);
+  padding: var(--canvas-padding);
 }
 .row {
   width: 100%;
@@ -26,6 +26,10 @@ body,
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+}
+
+#canvas {
+  cursor: pointer;
 }
 
 #canvasContainer {

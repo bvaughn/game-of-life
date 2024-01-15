@@ -1,12 +1,11 @@
-import { assert } from "../assert";
 import {
+  CANVAS_PADDING,
+  CELL_GAP,
   COLORS,
   MAX_CELL_COUNT,
   MAX_CELL_DENSITY,
-  MAX_CELL_SIZE,
   MAX_FRAMERATE,
   MAX_INITIAL_LOOPS,
-  PADDING,
 } from "../config";
 import { Game, createGame } from "../game";
 import { initialCanvas, renderState } from "./drawing";
@@ -44,7 +43,8 @@ const canvas = document.getElementById("canvas") as HTMLCanvasElement;
 
     document.body.style.setProperty(name, value);
   }
-  document.body.style.setProperty("--padding", `${PADDING}px`);
+  document.body.style.setProperty("--canvas-padding", `${CANVAS_PADDING}px`);
+  document.body.style.setProperty("--cell-gap", `${CELL_GAP}px`);
 }
 
 inputElements.density.max = "" + MAX_CELL_DENSITY;
@@ -53,7 +53,7 @@ inputElements.framerate.max = "" + MAX_FRAMERATE;
 
 // Game state
 let framerate: number = 0;
-let game: Game | null = null;
+let game: Game;
 let gameStateIndex: number = 0;
 let isPlaying: boolean = false;
 let timeout: ReturnType<typeof setTimeout> | null = null;
@@ -69,8 +69,6 @@ function restartOnEnter(event: KeyboardEvent) {
 }
 
 function showNextState() {
-  assert(game);
-
   stopPlayback();
 
   if (gameStateIndex === game.states.length - 1) {
@@ -83,8 +81,6 @@ function showNextState() {
 }
 
 function showPreviousState() {
-  assert(game);
-
   stopPlayback();
 
   if (gameStateIndex === 0) {
@@ -169,8 +165,6 @@ function toggleLoopPlayback() {
 }
 
 function togglePlayPause() {
-  assert(game);
-
   if (isPlaying) {
     stopPlayback();
     updateInterface();
@@ -182,8 +176,6 @@ function togglePlayPause() {
     }
 
     const tick = () => {
-      assert(game);
-
       if (gameStateIndex === game.states.length - 1) {
         if (loopPlayback) {
           gameStateIndex = 0;
@@ -206,8 +198,6 @@ function togglePlayPause() {
 }
 
 function updateInterface() {
-  assert(game);
-
   const gameState = game.getState(gameStateIndex);
   const prevGameState =
     gameStateIndex > 0 ? game.getState(gameStateIndex - 1) : null;

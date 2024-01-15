@@ -1,9 +1,10 @@
+export const CANVAS_PADDING = 10;
+export const CELL_GAP = 1;
 export const MAX_CELL_COUNT = 1000;
 export const MAX_CELL_SIZE = 15;
 export const MAX_CELL_DENSITY = 100;
 export const MAX_FRAMERATE = 50;
 export const MAX_INITIAL_LOOPS = 500;
-export const PADDING = 10;
 
 export const COLORS = {
   ALMOST_BLACK: "#222",
