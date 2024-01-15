@@ -8,7 +8,10 @@ export interface State {
 }
 
 export interface Game {
-  computeStates(maxStates: Number): Promise<void>;
+  computeStates(
+    maxStates: Number,
+    scheduler: (callback: () => void) => void,
+  ): Promise<void>;
   getState(index: number): State;
   numColumns: number;
   numRows: number;
@@ -27,13 +30,13 @@ export function createGame({
   const totalCellCount = numColumns * numRows;
 
   const liveCells = new Array(totalCellCount)
-  .fill(0)
-  .reduce((liveCells, cell, index) => {
-    if (Math.random() < liveCellDensity) {
-      liveCells.push(index);
-    }
-    return liveCells;
-  }, []);
+    .fill(0)
+    .reduce((liveCells, cell, index) => {
+      if (Math.random() < liveCellDensity) {
+        liveCells.push(index);
+      }
+      return liveCells;
+    }, []);
 
   const initialState: State = {
     deadCellCount: totalCellCount - liveCells.length,
@@ -45,7 +48,10 @@ export function createGame({
   const states: State[] = [initialState];
 
   const game: Game = {
-    computeStates: async (maxStates: number) => {
+    computeStates: async (
+      maxStates: number,
+      scheduler: (callback: () => void) => void,
+    ) => {
       let currentState = initialState;
 
       const serializedStates = new Set();
@@ -69,7 +75,7 @@ export function createGame({
 
           serializedStates.add(serialized);
 
-          requestAnimationFrame(tick);
+          scheduler(tick);
         }
 
         tick();

@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "node": "ts-node node.ts",
     "prettier": "prettier . --write",
     "preview": "vite preview",
     "typescript": "tsc --noEmit",

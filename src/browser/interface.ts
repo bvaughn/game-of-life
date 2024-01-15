@@ -1,11 +1,13 @@
-import {assert} from "../assert";
+import { assert } from "../assert";
 import { COLORS, MAX_INITIAL_LOOPS, PADDING } from "../config";
 import { Game, createGame } from "../game";
-import { initialCanvas, renderState } from "./canvas";
+import { initialCanvas, renderState } from "./drawing";
 
 const buttonElements = {
   next: document.getElementById("nextButton") as HTMLButtonElement,
-  loopPlayback: document.getElementById("loopPlaybackButton") as HTMLButtonElement,
+  loopPlayback: document.getElementById(
+    "loopPlaybackButton",
+  ) as HTMLButtonElement,
   playPause: document.getElementById("playPauseButton") as HTMLButtonElement,
   previous: document.getElementById("previousButton") as HTMLButtonElement,
   restart: document.getElementById("restartButton") as HTMLButtonElement,
@@ -96,10 +98,19 @@ async function startNewGame() {
     0,
     Math.min(100, parseInt(inputElements.density.value)),
   );
-  const numColumns = Math.max(1, Math.min(50, parseInt(inputElements.numColumns.value)));
-  const numRows = Math.max(1, Math.min(50, parseInt(inputElements.numRows.value)));
+  const numColumns = Math.max(
+    1,
+    Math.min(50, parseInt(inputElements.numColumns.value)),
+  );
+  const numRows = Math.max(
+    1,
+    Math.min(50, parseInt(inputElements.numRows.value)),
+  );
 
-  framerate = Math.max(1, Math.min(30, parseInt(inputElements.framerate.value)));
+  framerate = Math.max(
+    1,
+    Math.min(30, parseInt(inputElements.framerate.value)),
+  );
 
   inputElements.density.value = "" + liveCellDensity;
   inputElements.framerate.value = "" + framerate;
@@ -117,17 +128,17 @@ async function startNewGame() {
     numRows,
   });
 
-  canvasContainer.removeAttribute('data-ready');
+  canvasContainer.removeAttribute("data-ready");
 
   game = createGame({
-    liveCellDensity: 0.25,
+    liveCellDensity: liveCellDensity / 100,
     numColumns,
     numRows,
   });
 
-  await game.computeStates(MAX_INITIAL_LOOPS);
+  await game.computeStates(MAX_INITIAL_LOOPS, requestAnimationFrame);
 
-  canvasContainer.setAttribute('data-ready', '');
+  canvasContainer.setAttribute("data-ready", "");
 
   updateInterface();
 }
@@ -181,7 +192,8 @@ function updateInterface() {
   assert(game);
 
   const gameState = game.getState(gameStateIndex);
-  const prevGameState = gameStateIndex > 0 ? game.getState(gameStateIndex - 1) : null;
+  const prevGameState =
+    gameStateIndex > 0 ? game.getState(gameStateIndex - 1) : null;
 
   renderState({ canvas, game, gameState, prevGameState });
 
@@ -192,8 +204,14 @@ function updateInterface() {
 
   buttonElements.next.disabled = game.states.length === 1;
   buttonElements.playPause.disabled = game.states.length === 1;
-  buttonElements.loopPlayback.setAttribute("data-state", loopPlayback ? "active" : "inactive");
-  buttonElements.playPause.setAttribute("data-state", isPlaying ? "active" : "inactive");
+  buttonElements.loopPlayback.setAttribute(
+    "data-state",
+    loopPlayback ? "active" : "inactive",
+  );
+  buttonElements.playPause.setAttribute(
+    "data-state",
+    isPlaying ? "active" : "inactive",
+  );
   buttonElements.previous.disabled = game.states.length === 1;
 }
 
