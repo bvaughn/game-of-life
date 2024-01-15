@@ -1,0 +1,19 @@
+{
+  "name": "game-of-life",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "prettier": "prettier . --write",
+    "preview": "vite preview",
+    "typescript": "tsc --noEmit",
+    "typescript:watch": "tsc --noEmit --watch"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "prettier": "latest",
+    "typescript": "latest",
+    "vite": "latest"
+  }
+}

@@ -1,25 +1,15 @@
-:root {
-  --black: #111;
-  --almost-black: #222;
-  --dark-gray: #333;
-  --light-gray: #666;
-  --green: #090;
-  --white: #fff;
-
-  --padding: 10px;
-  --max-cell-size: 15px;
-}
-
-html, body {
-  background-color: var(--black);
-  color: var(--white);
+html,
+body {
+  height: 100vh;
+  background-color: var(--color-black);
+  color: var(--color-white);
   font-family: sans-serif;
   font-size: 16px;
   padding: 0;
   margin: 0;
 }
-body, .container {
-  height: 100vh;
+body,
+.container {
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -38,9 +28,24 @@ body, .container {
 }
 
 #canvasContainer {
+  width: 100%;
   overflow-y: auto;
-  height: 0px;
+  min-height: 0px;
   flex: 1 0 auto;
+  text-align: center;
+}
+#canvasContainer canvas {
+  display: none;
+}
+#canvasContainer[data-ready] canvas {
+  display: inline;
+}
+#canvasContainer[data-ready] .analyzingLabel {
+  display: none;
+}
+
+.analyzingLabel {
+  color: var(--color-light-gray);
 }
 
 .statusColumnLeft {
@@ -56,19 +61,21 @@ body, .container {
   width: 25%;
 }
 #maxLoopIndex {
-  color: var(--light-gray);
+  color: var(--color-light-gray);
 }
 
 #dyingCell,
 #liveCell {
+  height: 1rem;
+  width: 1rem;
   border-radius: 100%;
   display: inline-block;
 }
 #dyingCell {
-  border: 1px dashed var(--light-gray);
+  border: 1px dashed var(--color-light-gray);
 }
 #liveCell {
-  background-color: var(--green);
+  background-color: var(--color-green);
 }
 
 label {
@@ -80,27 +87,41 @@ label {
 .icon {
   width: 1.5rem;
   height: 1.5rem;
-  fill: var(--light-gray);
+  fill: var(--color-light-gray);
 }
 
 #restartButton {
-  background-color: var(--almost-black);
+  flex: 1 0 auto;
   padding: 0.25rem 1ch;
+}
+
+.iconButton {
+  background-color: var(--color-almost-black);
   border-radius: 0.25rem;
   border: none;
   outline: none;
   cursor: pointer;
-  color: var(--white);
-  flex: 1 0 auto;
+  padding: 0.25rem;
+  color: var(--color-white);
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
   gap: 1ch;
 }
-#restartButton .icon {
-  fill: var(--white);
+.iconButton:disabled {
+  opacity: 0.5;
 }
-#restartButton:hover {
+.iconButton .icon {
+  fill: var(--color-white);
+}
+.iconButton:hover {
   background-color: #333;
+}
+.iconButton[data-state="active"] [data-inactive] {
+  display: none;
+}
+
+.iconButton[data-state="inactive"] [data-active] {
+  display: none;
 }
