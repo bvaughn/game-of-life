@@ -169,11 +169,17 @@ function toggleLoopPlayback() {
 }
 
 function togglePlayPause() {
+  assert(game);
+
   if (isPlaying) {
     stopPlayback();
     updateInterface();
   } else {
     isPlaying = true;
+
+    if (gameStateIndex === game.states.length - 1) {
+      gameStateIndex = 0;
+    }
 
     const tick = () => {
       assert(game);
