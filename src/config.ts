@@ -1,4 +1,7 @@
+export const MAX_CELL_COUNT = 1000;
 export const MAX_CELL_SIZE = 15;
+export const MAX_CELL_DENSITY = 100;
+export const MAX_FRAMERATE = 50;
 export const MAX_INITIAL_LOOPS = 500;
 export const PADDING = 10;
 

@@ -20,7 +20,7 @@ export function initialCanvas({
   maxWidth: number;
   numColumns: number;
   numRows: number;
-}) {
+}): number {
   cellSize = Math.min(
     MAX_CELL_SIZE,
     Math.floor((maxWidth - PADDING * 4) / numColumns),
@@ -40,6 +40,8 @@ export function initialCanvas({
 
   const context = canvas.getContext("2d") as CanvasRenderingContext2D;
   context.scale(scale, scale);
+
+  return cellSize;
 }
 
 export function renderState({

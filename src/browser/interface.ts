@@ -1,5 +1,13 @@
 import { assert } from "../assert";
-import { COLORS, MAX_INITIAL_LOOPS, PADDING } from "../config";
+import {
+  COLORS,
+  MAX_CELL_COUNT,
+  MAX_CELL_DENSITY,
+  MAX_CELL_SIZE,
+  MAX_FRAMERATE,
+  MAX_INITIAL_LOOPS,
+  PADDING,
+} from "../config";
 import { Game, createGame } from "../game";
 import { initialCanvas, renderState } from "./drawing";
 
@@ -16,8 +24,7 @@ const buttonElements = {
 const inputElements = {
   density: document.getElementById("densityInput") as HTMLInputElement,
   framerate: document.getElementById("framerateInput") as HTMLInputElement,
-  numColumns: document.getElementById("numColumnsInput") as HTMLInputElement,
-  numRows: document.getElementById("numRowsInput") as HTMLInputElement,
+  numCells: document.getElementById("numCellsInput") as HTMLInputElement,
 };
 
 const labelElements = {
@@ -39,6 +46,10 @@ const canvas = document.getElementById("canvas") as HTMLCanvasElement;
   }
   document.body.style.setProperty("--padding", `${PADDING}px`);
 }
+
+inputElements.density.max = "" + MAX_CELL_DENSITY;
+inputElements.numCells.max = "" + MAX_CELL_COUNT;
+inputElements.framerate.max = "" + MAX_FRAMERATE;
 
 // Game state
 let framerate: number = 0;
@@ -98,13 +109,9 @@ async function startNewGame() {
     0,
     Math.min(100, parseInt(inputElements.density.value)),
   );
-  const numColumns = Math.max(
+  const numCells = Math.max(
     1,
-    Math.min(50, parseInt(inputElements.numColumns.value)),
-  );
-  const numRows = Math.max(
-    1,
-    Math.min(50, parseInt(inputElements.numRows.value)),
+    Math.min(MAX_CELL_COUNT, parseInt(inputElements.numCells.value)),
   );
 
   framerate = Math.max(
@@ -114,12 +121,14 @@ async function startNewGame() {
 
   inputElements.density.value = "" + liveCellDensity;
   inputElements.framerate.value = "" + framerate;
-  inputElements.numColumns.value = "" + numColumns;
-  inputElements.numRows.value = "" + numRows;
+  inputElements.numCells.value = "" + numCells;
 
   const canvasContainer = canvas.parentElement as HTMLElement;
 
-  initialCanvas({
+  const numColumns = Math.floor(Math.sqrt(numCells));
+  const numRows = Math.floor(Math.sqrt(numCells));
+
+  const cellSize = initialCanvas({
     canvas,
     devicePixelRatio: window.devicePixelRatio,
     maxHeight: canvasContainer.clientHeight,
@@ -127,6 +136,8 @@ async function startNewGame() {
     numColumns,
     numRows,
   });
+
+  document.body.style.setProperty("--cell-size", `${cellSize}px`);
 
   canvasContainer.removeAttribute("data-ready");
 
