@@ -1,4 +1,10 @@
-import { CANVAS_PADDING, CELL_GAP, COLORS, MAX_CELL_SIZE } from "../config";
+import {
+  CANVAS_PADDING,
+  CELL_GAP,
+  COLORS,
+  MAX_CELL_SIZE,
+  MIN_CELL_SIZE,
+} from "../config";
 import { Game, State } from "../game";
 
 let canvasHeight: number = 0;
@@ -6,7 +12,7 @@ let canvasWidth: number = 0;
 let cellRadius: number = 0;
 let cellSize: number = 0;
 
-export function initialCanvas({
+export function initializeCanvas({
   canvas,
   devicePixelRatio,
   maxHeight,
@@ -21,10 +27,13 @@ export function initialCanvas({
   numColumns: number;
   numRows: number;
 }): number {
-  cellSize = Math.min(
-    MAX_CELL_SIZE,
-    Math.floor((maxWidth - CANVAS_PADDING * 4) / numColumns),
-    Math.floor((maxHeight - CANVAS_PADDING * 4) / numRows),
+  cellSize = Math.max(
+    MIN_CELL_SIZE,
+    Math.min(
+      MAX_CELL_SIZE,
+      Math.floor((maxWidth - CANVAS_PADDING * 4) / numColumns),
+      Math.floor((maxHeight - CANVAS_PADDING * 4) / numRows),
+    ),
   );
   cellRadius = cellSize / 2 - CELL_GAP * 2;
 

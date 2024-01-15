@@ -19,9 +19,7 @@ export async function initialize() {
     numRows,
   });
 
-  await game.computeStates(MAX_INITIAL_LOOPS, (callback: () => void) =>
-    callback(),
-  );
+  await game.analyzeSync(MAX_INITIAL_LOOPS);
 }
 
 export function run() {

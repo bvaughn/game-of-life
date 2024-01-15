@@ -8,7 +8,7 @@ import {
   MAX_INITIAL_LOOPS,
 } from "../config";
 import { Game, createGame } from "../game";
-import { initialCanvas, renderState } from "./drawing";
+import { initializeCanvas, renderState } from "./drawing";
 
 const buttonElements = {
   next: document.getElementById("nextButton") as HTMLButtonElement,
@@ -124,7 +124,7 @@ async function startNewGame() {
   const numColumns = Math.floor(Math.sqrt(numCells));
   const numRows = Math.floor(Math.sqrt(numCells));
 
-  const cellSize = initialCanvas({
+  const cellSize = initializeCanvas({
     canvas,
     devicePixelRatio: window.devicePixelRatio,
     maxHeight: canvasContainer.clientHeight,
@@ -143,7 +143,7 @@ async function startNewGame() {
     numRows,
   });
 
-  await game.computeStates(MAX_INITIAL_LOOPS, requestAnimationFrame);
+  await game.analyze(MAX_INITIAL_LOOPS);
 
   canvasContainer.setAttribute("data-ready", "");
 

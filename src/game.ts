@@ -8,10 +8,8 @@ export interface State {
 }
 
 export interface Game {
-  computeStates(
-    maxStates: Number,
-    scheduler: (callback: () => void) => void,
-  ): Promise<void>;
+  analyze(maxStates: Number): Promise<void>;
+  analyzeSync(maxStates: Number): void;
   getState(index: number): State;
   numColumns: number;
   numRows: number;
@@ -48,16 +46,15 @@ export function createGame({
   const states: State[] = [initialState];
 
   const game: Game = {
-    computeStates: async (
-      maxStates: number,
-      scheduler: (callback: () => void) => void,
-    ) => {
+    analyze: async (maxStates: number, maxTickMs: number = 10) => {
       let currentState = initialState;
 
       const serializedStates = new Set();
 
       return new Promise((resolve) => {
         function tick() {
+          let start = performance.now();
+
           currentState = computeNextState(game, currentState);
 
           states.push(currentState);
@@ -75,11 +72,35 @@ export function createGame({
 
           serializedStates.add(serialized);
 
-          scheduler(tick);
+          if (performance.now() - start < maxTickMs) {
+            tick();
+          } else {
+            setTimeout(tick, 10);
+          }
         }
 
         tick();
       });
+    },
+    analyzeSync: (maxStates: number) => {
+      let currentState = initialState;
+
+      const serializedStates = new Set();
+
+      while (true) {
+        currentState = computeNextState(game, currentState);
+
+        states.push(currentState);
+
+        const serialized = currentState.liveCells.join(",");
+        if (serializedStates.has(serialized)) {
+          return;
+        } else if (states.length === maxStates) {
+          return;
+        }
+
+        serializedStates.add(serialized);
+      }
     },
     getState: (index) => {
       const state = states[index];
