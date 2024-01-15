@@ -76,7 +76,7 @@ export function renderState({
     const wasAlive = prevLiveCells.includes(index);
     const isAlive = liveCells.includes(index);
     if (isAlive) {
-      if (wasAlive) {
+      if (wasAlive || prevGameState == null) {
         context.fillStyle = COLORS.GREEN;
         context.strokeStyle = COLORS.BLACK;
         context.setLineDash([]);
